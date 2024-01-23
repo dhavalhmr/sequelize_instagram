@@ -1,19 +1,25 @@
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
-const Sequelize = require('sequelize');
-const process = require('process');
+import fs from 'fs';
+import path from 'path';
+import { Sequelize, DataTypes } from 'sequelize';
+import process from 'process';
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.js')[env];
+const config: any = require(__dirname + '/../config/config.js')[env];
 const db: any = {};
 
-let sequelize: any;
+let sequelize: Sequelize;
 if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+  const databaseUrl = process.env[config.use_env_variable];
+
+  if (!databaseUrl)
+    throw new Error(
+      `Environment variable ${config.use_env_variable} is not set.`
+    );
+
+  sequelize = new Sequelize(databaseUrl, config);
 } else {
-  console.log("dddddddddddddddd",config.database)
   sequelize = new Sequelize(
     config.database,
     config.username,
@@ -32,10 +38,9 @@ fs.readdirSync(__dirname)
     );
   })
   .forEach((file: any): void => {
-    console.log('__dirname:', __dirname);
     const model = require(path.join(__dirname, file)).default(
       sequelize,
-      Sequelize.DataTypes
+      DataTypes
     );
     db[model.name] = model;
   });
