@@ -27,6 +27,7 @@ export default (sequelize: any, DataTypes: any) => {
      */
     static associate(models: any) {
       // define association here
+      // User.hasMany(models.Request, { foreignKey: 'userId' });
     }
   }
 
@@ -82,6 +83,7 @@ export default (sequelize: any, DataTypes: any) => {
       bio: DataTypes.STRING(500),
     },
     {
+      timestamps: true,
       sequelize,
       modelName: 'User',
     }
