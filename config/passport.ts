@@ -7,14 +7,11 @@ passport.use(
   new Strategy(
     { usernameField: 'username', passwordField: 'password' },
     async function (username: any, password: any, done: any) {
-      console.log('password===>', password);
-      console.log('username===>', username);
-      console.log('inside middleware');
       try {
         if (!username || !password) throw new Error('Missing credentials');
         const user = await db.User.findOne({ where: { username } });
 
-        if (!user) {  
+        if (!user) {
           throw new Error('User not found');
         }
 
