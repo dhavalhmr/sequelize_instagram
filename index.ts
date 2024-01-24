@@ -21,7 +21,7 @@ app.use(compression());
 app.use(cookieParser());
 app.use(express.json());
 app.use('/user', routes.user);
-// app.use('/post', routes.post);
+app.use('/post', routes.post);
 
 app.listen(port, async () => {
   await initializedDatabase();

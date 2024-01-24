@@ -3,8 +3,8 @@ import { Model } from 'sequelize';
 export default (sequelize: any, DataTypes: any) => {
   type LikeAndCommentAttributes = {
     id: number;
-    userId: string;
-    postId: string;
+    userId: number;
+    postId: number;
     comment: string;
   };
   class LikeAndComment
@@ -12,8 +12,8 @@ export default (sequelize: any, DataTypes: any) => {
     implements LikeAndCommentAttributes
   {
     id!: number;
-    userId!: string;
-    postId!: string;
+    userId!: number;
+    postId!: number;
     comment!: string;
     /**
      * Helper method for defining associations.
@@ -27,8 +27,8 @@ export default (sequelize: any, DataTypes: any) => {
   LikeAndComment.init(
     {
       id: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
-      userId: DataTypes.STRING,
-      postId: DataTypes.STRING,
+      userId: DataTypes.BIGINT,
+      postId: DataTypes.BIGINT,
       comment: DataTypes.STRING,
     },
     { timestamps: true, sequelize, modelName: 'LikeAndComment' }

@@ -3,6 +3,7 @@ import { Model } from 'sequelize';
 export default (sequelize: any, DataTypes: any) => {
   type PostAttribute = {
     id: number;
+    userId: number;
     description: string;
     photoUpload: string;
     like: string;
@@ -10,6 +11,7 @@ export default (sequelize: any, DataTypes: any) => {
   };
   class Post extends Model<PostAttribute> implements PostAttribute {
     id!: number;
+    userId!: number;
     description!: string;
     photoUpload!: string;
     like!: string;
@@ -21,15 +23,17 @@ export default (sequelize: any, DataTypes: any) => {
      */
     static associate(models: any) {
       // define association here
+      Post.belongsTo(models.User, { foreignKey: 'userId' });
     }
   }
   Post.init(
     {
       id: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
+      userId: { type: DataTypes.BIGINT, allowNull: false },
       description: DataTypes.STRING,
-      photoUpload: DataTypes.STRING,
-      like: DataTypes.STRING,
-      comment: DataTypes.STRING,
+      photoUpload: { type: DataTypes.STRING, allowNull: false },
+      like: DataTypes.ARRAY(DataTypes.STRING),
+      comment: DataTypes.ARRAY(DataTypes.JSON),
     },
     {
       timestamps: true,

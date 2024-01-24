@@ -1,9 +1,9 @@
 import user from './user';
-// import post from './post';
+import post from './post';
 
 const routes = {
   user,
-  //   post,
+  post,
 };
 
 export default routes;

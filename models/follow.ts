@@ -3,15 +3,15 @@ import { Model, DataTypes } from 'sequelize';
 
 type FollowAttributes = {
   id: number;
-  receiverId: string;
-  senderId: string;
+  receiverId: number;
+  senderId: number;
   status: string;
 };
 export default (sequelize: any) => {
   class Follow extends Model<FollowAttributes> implements FollowAttributes {
     id!: number;
-    receiverId!: string;
-    senderId!: string;
+    receiverId!: number;
+    senderId!: number;
     status!: string;
     /**
      * Helper method for defining associations.
@@ -26,8 +26,8 @@ export default (sequelize: any) => {
   Follow.init(
     {
       id: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
-      receiverId: DataTypes.STRING,
-      senderId: DataTypes.STRING,
+      receiverId: DataTypes.BIGINT,
+      senderId: DataTypes.BIGINT,
       status: DataTypes.ENUM('Accepted', 'Rejected', 'Delete', 'Pending'),
     },
     {
