@@ -4,7 +4,7 @@ const sequelize = db.sequelize;
 const initializedDatabase = async () => {
   try {
     sequelize
-      .sync({ alter: true, force: true })
+      .sync({ alter: true, force: false })
       .then((): void => {
         console.log('Connected to Database');
       })
