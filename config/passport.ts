@@ -1,20 +1,35 @@
 import db from '../models';
 import passport from 'passport';
 import { Strategy } from 'passport-local';
+import bcrypt from 'bcrypt';
 
 passport.use(
   new Strategy(
     { usernameField: 'username', passwordField: 'password' },
     async function (username: any, password: any, done: any) {
+      console.log('password===>', password);
+      console.log('username===>', username);
+      console.log('inside middleware');
       try {
-        const matchUser = await db.User.findOne({ username, password });
-        if (matchUser.dataValues) {
-        } else {
-          done(null, false, { message: 'Incorrect password.' });
+        if (!username || !password) throw new Error('Missing credentials');
+        const user = await db.User.findOne({ where: { username } });
+
+        if (!user) {  
+          throw new Error('User not found');
         }
-        return done(null, matchUser);
+
+        // Check the password
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if (!isMatch) {
+          console.log('Valid authenctication');
+          done(null, user);
+        } else {
+          console.log('Invalid authenctication');
+          done(null, null);
+        }
       } catch (err) {
-        return done(err);
+        done(err, null);
       }
     }
   )
@@ -24,10 +39,13 @@ passport.serializeUser(function (user: any, done: any) {
   done(null, user.id);
 });
 
-passport.deserializeUser(function (id: any, done: any) {
-  db.User.findByPk(id).then(function (user: any) {
+passport.deserializeUser(async function (id: any, done: any) {
+  try {
+    const user = await db.User.findByPk(id);
     done(null, user);
-  });
+  } catch (error) {
+    done(error);
+  }
 });
 
 export default passport;

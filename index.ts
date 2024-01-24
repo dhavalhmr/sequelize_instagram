@@ -24,25 +24,23 @@ app.use(cors(CorsOptions));
 app.use(compression());
 app.use(cookieParser());
 app.use(express.json());
-app.use(
-  session({ secret: 'keyboard cat', resave: true, saveUninitialized: true })
-);
+app.use(session({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
 app.use(morgan('dev'));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(passport.authenticate('session'));
-
 
 app.use('/auth', routes.auth);
 app.use('/user', routes.user);
-app.use('/post', routes.post);
+app.use('/post', routes.post);  
 
 const isAuthenticated = (req: any, res: any, next: any) => {
-  if (req.user) return next();
-  else
+  if (req.isAuthenticated()) {
+    return next();
+  } else {
     return res.status(401).json({
       error: 'User not authenticated',
     });
+  }
 };
 
 app.use(isAuthenticated);
