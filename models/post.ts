@@ -1,6 +1,6 @@
 'use strict';
 import { Model } from 'sequelize';
-module.exports = (sequelize: any, DataTypes: any) => {
+export default (sequelize: any, DataTypes: any) => {
   type PostAttribute = {
     id: number;
     description: string;
@@ -25,7 +25,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
   }
   Post.init(
     {
-      id: DataTypes.BIGINT,
+      id: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
       description: DataTypes.STRING,
       photoUpload: DataTypes.STRING,
       like: DataTypes.STRING,

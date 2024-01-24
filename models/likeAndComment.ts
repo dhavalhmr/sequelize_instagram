@@ -26,7 +26,7 @@ export default (sequelize: any, DataTypes: any) => {
   }
   LikeAndComment.init(
     {
-      id: DataTypes.BIGINT,
+      id: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
       userId: DataTypes.STRING,
       postId: DataTypes.STRING,
       comment: DataTypes.STRING,
