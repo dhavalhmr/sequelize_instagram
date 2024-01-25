@@ -12,12 +12,12 @@ import connectPgSimple from 'connect-pg-simple';
 import pg from 'pg';
 import { config } from './config';
 interface ConfigType {
-  name: string | undefined;
-  username: string | undefined;
-  password: string | undefined;
-  host: string | undefined;
-  port: string | undefined;
-  dialect: string | undefined;
+  name: string;
+  username: string;
+  password: string;
+  host: string;
+  port: string;
+  dialect: string;
 }
 
 const app = express();
