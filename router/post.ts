@@ -1,16 +1,25 @@
 import express from 'express';
 import db from '../models';
+import passport from '../config/passport';
 
 const postRouter = express?.Router();
 
-postRouter?.post('/create', (req, res) => {
-  try {
-    db.Post.create(req?.body)
-      .then((result: any) => res.send({ status: 200, result }))
-      .catch((err: any) => res.send({ status: 400, err }));
-  } catch (err) {
-    res.send({ status: 400, err });
-  }
+postRouter.post('/create', (req, res, next) => {
+  passport.authenticate('local', (err: any, user: any, info: any) => {
+    try {
+      console.log('session:', req.session);
+      db.Post.create(req?.body)
+        .then((result: any) => res.send({ status: 200, result }))
+        .catch((err: any) => res.send({ status: 400, err }));
+    } catch (err) {
+      res.send({ status: 400, err });
+    }
+  })(req, res, next);
+});
+postRouter.use((req, res, next) => {
+  console.log('Checking req.user ...');
+  console.log('req.user:', req.user);
+  req.user ? next() : res.send(401);
 });
 
 postRouter.get('/:postId', async (req, res) => {
@@ -20,8 +29,11 @@ postRouter.get('/:postId', async (req, res) => {
 
     if (post?.dataValues)
       return res.send({ status: 200, result: post.dataValues });
-    else return res.send({ status: 400, message: `Post with ${postId} not found` });
-
+    else
+      return res.send({
+        status: 400,
+        message: `Post with ${postId} not found`,
+      });
   } catch (err) {
     res.send({ status: 400, err });
   }

@@ -8,9 +8,22 @@ import routes from './router';
 import morgan from 'morgan';
 import session from 'express-session';
 import passport from 'passport';
+import connectPgSimple from 'connect-pg-simple';
+import pg from 'pg';
+import { config } from './config';
+interface ConfigType {
+  name: string | undefined;
+  username: string | undefined;
+  password: string | undefined;
+  host: string | undefined;
+  port: string | undefined;
+  dialect: string | undefined;
+}
 
 const app = express();
 const port: number = 2000;
+const memoryStore = new session.MemoryStore();
+const { name, username, password, host } = config.dbCredential as ConfigType;
 
 const CorsOptions: {
   origin: string;
@@ -19,21 +32,36 @@ const CorsOptions: {
   origin: '*',
   credential: true,
 };
+const pgPool = new pg.Pool({
+  // postgresql://USER:PASSWORD@HOST:PORT/DATABASE
+  connectionString: `postgresql://${username}:${password}@${host}:${port}/${name}`,
+});
 
 app.use(cors(CorsOptions));
 app.use(compression());
 app.use(cookieParser());
 app.use(express.json());
-app.use(session({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
+app.use(
+  session({
+    secret: 'keyboard cat',
+    resave: true,
+    saveUninitialized: true,
+    store: new (connectPgSimple(session))({
+      pool: pgPool,
+    }),
+    cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }, // 30 days
+  })
+);
+
 app.use(morgan('dev'));
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/auth', routes.auth);
 app.use('/user', routes.user);
-app.use('/post', routes.post);  
+app.use('/post', routes.post);
 
-const isAuthenticated = (req: any, res: any, next: any) => {
+function isAuthenticated(req: any, res: any, next: any) {
   if (req.isAuthenticated()) {
     return next();
   } else {
@@ -41,11 +69,10 @@ const isAuthenticated = (req: any, res: any, next: any) => {
       error: 'User not authenticated',
     });
   }
-};
+}
 
 app.use(isAuthenticated);
 
 app.listen(port, async () => {
   await initializedDatabase();
-  console.log(`Server is running on ${port}`);
 });
