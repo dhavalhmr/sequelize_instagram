@@ -63,13 +63,8 @@ app.use('/user', routes.user);
 app.use('/post', routes.post);
 
 function isAuthenticated(req: any, res: any, next: any) {
-  if (req.isAuthenticated()) {
-    return next();
-  } else {
-    return res.status(401).json({
-      error: 'User not authenticated',
-    });
-  }
+  if (req.isAuthenticated()) return next();
+  else return res.status(401).json({ error: 'User not authenticated' });
 }
 
 app.use(isAuthenticated);
