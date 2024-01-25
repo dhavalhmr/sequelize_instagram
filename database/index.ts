@@ -4,9 +4,11 @@ const sequelize = db.sequelize;
 const initializedDatabase = async () => {
   try {
     sequelize
-      .sync({ alter: true, force: false })
+      .authenticate()
+      // .sync({ alter: true, force: false })
       .then((): void => {
-        console.log('Connected to Database');
+        console.log('Connection has been established successfully');
+        sync();
       })
       .catch((err: any): void => {
         console.log('Database has thrown error', err);
@@ -14,6 +16,17 @@ const initializedDatabase = async () => {
   } catch (error) {
     console.log('Error while initializing Database');
   }
+
+  const sync = () => {
+    sequelize
+      .sync()
+      .then((): void =>
+        console.log('Database has been syncronise successfully')
+      )
+      .catch((err: any): void =>
+        console.log('Database has thrown error in syncronise', err)
+      );
+  };
 };
 
 export default initializedDatabase;
