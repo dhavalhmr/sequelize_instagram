@@ -1,5 +1,6 @@
 'use strict';
 import { Model } from 'sequelize';
+import bcryptjs from 'bcryptjs';
 
 type UserAttributes = {
   id: number;
@@ -28,6 +29,9 @@ export default (sequelize: any, DataTypes: any) => {
     static associate(models: any) {
       // define association here
       // User.hasMany(models.Request, { foreignKey: 'userId' });
+    }
+    validPassword(password: string): boolean {
+      return bcryptjs.compareSync(password, this.password);
     }
   }
 
@@ -83,10 +87,37 @@ export default (sequelize: any, DataTypes: any) => {
       bio: DataTypes.STRING(500),
     },
     {
+      hooks: {
+        beforeCreate: async (user) => {
+          try {
+            if (user.password) {
+              const salt = await bcryptjs.genSaltSync(10);
+              user.password = bcryptjs.hashSync(user.password, salt);
+            }
+          } catch (error) {
+            console.error('Error during password hashing:', error);
+          }
+        },
+        beforeUpdate: async (user) => {
+          try {
+            if (user.password) {
+              const salt = await bcryptjs.genSaltSync(10);
+              user.password = bcryptjs.hashSync(user.password, salt);
+            }
+          } catch (error) {
+            console.error('Error during password hashing:', error);
+          }
+        },
+      },
       timestamps: true,
       sequelize,
       modelName: 'User',
     }
   );
+
+  User.prototype.validPassword = function (password: string): boolean {
+    return bcryptjs.compareSync(password, this.password);
+  };
+
   return User;
 };

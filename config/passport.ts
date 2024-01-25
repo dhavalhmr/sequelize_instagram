@@ -1,7 +1,7 @@
 import db from '../models';
 import passport from 'passport';
 import { Strategy } from 'passport-local';
-import bcrypt from 'bcrypt';
+import bcryptjs from 'bcryptjs';
 
 passport.use(
   new Strategy(
@@ -16,7 +16,7 @@ passport.use(
         }
 
         // Check the password
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = await bcryptjs.compare(password, user.password);
 
         if (!isMatch) {
           console.log('Valid authenctication');
