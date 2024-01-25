@@ -32,9 +32,10 @@ const CorsOptions: {
   origin: '*',
   credential: true,
 };
+
 const pgPool = new pg.Pool({
   // postgresql://USER:PASSWORD@HOST:PORT/DATABASE
-  connectionString: `postgresql://${username}:${password}@${host}:${port}/${name}`,
+  connectionString: `postgresql://${username}:${password}@${host}:${config.dbCredential.port}/${name}`,
 });
 
 app.use(cors(CorsOptions));
