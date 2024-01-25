@@ -5,9 +5,10 @@ type ProcessEnv = {
   HOST?: string;
   PORT?: string;
   DIALECT?: string;
+  SESSION_SECRET?: string;
 };
 
-const { DB_NAME, DB_USERNAME, DB_PASSWORD, HOST, PORT, DIALECT } =
+const { DB_NAME, DB_USERNAME, DB_PASSWORD, HOST, PORT, DIALECT,SESSION_SECRET } =
   process?.env as ProcessEnv;
 
 export const config = {
@@ -18,5 +19,6 @@ export const config = {
     host: HOST,
     port: PORT,
     dialect: DIALECT,
+    session: SESSION_SECRET as string,
   },
 };

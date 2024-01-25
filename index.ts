@@ -22,7 +22,6 @@ interface ConfigType {
 
 const app = express();
 const port: number = 2000;
-const memoryStore = new session.MemoryStore();
 const { name, username, password, host } = config.dbCredential as ConfigType;
 
 const CorsOptions: {
@@ -44,7 +43,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(
   session({
-    secret: 'keyboard cat',
+    secret: config.dbCredential.session,
     resave: true,
     saveUninitialized: true,
     store: new (connectPgSimple(session))({
