@@ -32,8 +32,8 @@ export default (sequelize: any, DataTypes: any) => {
       userId: { type: DataTypes.BIGINT, allowNull: false },
       description: DataTypes.STRING,
       photoUpload: { type: DataTypes.STRING, allowNull: false },
-      like: DataTypes.ARRAY(DataTypes.STRING),
-      comment: DataTypes.ARRAY(DataTypes.JSON),
+      like: { type: DataTypes.ARRAY(DataTypes.STRING), defaultValue: [] },
+      comment: { type: DataTypes.ARRAY(DataTypes.JSON), defaultValue: [] },
     },
     {
       timestamps: true,

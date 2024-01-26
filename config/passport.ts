@@ -19,11 +19,11 @@ passport.use(
         const isMatch = await bcryptjs.compare(password, user.password);
 
         if (!isMatch) {
-          console.log('Valid authenctication');
-          done(null, user);
-        } else {
           console.log('Invalid authenctication');
           done(null, null);
+        } else {
+          console.log('Valid authenctication');
+          done(null, user);
         }
       } catch (err) {
         done(err, null);

@@ -1,4 +1,5 @@
 import express from 'express';
+import jwt from 'jsonwebtoken';
 import passport from '../config/passport';
 
 const authRouter = express.Router();
@@ -20,6 +21,9 @@ authRouter.post('/login', (req, res, next) => {
       }
       console.log('User Authenticated:', user);
       console.log('Session:', req.session); // Log the session
+      const { username, email } = user?.dataValues;
+      const generateToken = jwt.sign({ username, email }, 'eugbf7153%*#^');
+      res.cookie('access_token', generateToken);
       return res.status(200).send({ message: 'Login successful' });
     });
   })(req, res, next);

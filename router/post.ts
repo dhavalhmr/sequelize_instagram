@@ -1,14 +1,21 @@
 import express from 'express';
 import db from '../models';
 import passport from '../config/passport';
+import verifyToken from '../auth';
 
 const postRouter = express?.Router();
 
-postRouter.post('/create', (req, res, next) => {
+postRouter.use((req, res, next) => {
+  req.user ? next() : res.send(401);
+});
+
+postRouter.post('/create', verifyToken, (req, res, next) => {
   passport.authenticate('local', (err: any, user: any, info: any) => {
     try {
-      console.log('session:', req.session);
-      db.Post.create(req?.body)
+      db.Post.create({
+        userId: (req?.user as any)?.dataValues?.id,
+        ...req?.body,
+      })
         .then((result: any) => res.send({ status: 200, result }))
         .catch((err: any) => res.send({ status: 400, err }));
     } catch (err) {
@@ -16,26 +23,32 @@ postRouter.post('/create', (req, res, next) => {
     }
   })(req, res, next);
 });
-postRouter.use((req, res, next) => {
-  console.log('Checking req.user ...');
-  console.log('req.user:', req.user);
-  req.user ? next() : res.send(401);
-});
 
-postRouter.get('/:postId', async (req, res) => {
+postRouter.put('/update/:postId', verifyToken, async (req, res) => {
   try {
     const postId = req?.params?.postId;
-    const post = await db?.Post?.findByPk(postId, { include: [db?.User] });
 
-    if (post?.dataValues)
-      return res.send({ status: 200, result: post.dataValues });
-    else
+    const userId = (req?.user as any)?.dataValues.id;
+
+    const oldPost = await db?.Post?.findOne({ where: { id: postId } });
+
+    if (userId === oldPost.dataValues.userId) {
+      const updatePost = await db?.Post?.update(req.body, {
+        where: { id: oldPost.dataValues.id },
+      });
+
+      if (updatePost[0] === 1) {
+        const newPost = await db?.Post?.findOne({ where: { id: postId } });
+        return res.send({ status: 200, result: newPost.dataValues });
+      }
+    } else {
       return res.send({
         status: 400,
-        message: `Post with ${postId} not found`,
+        message: `Post with ${postId} not updated`,
       });
-  } catch (err) {
-    res.send({ status: 400, err });
+    }
+  } catch (err: any) {
+    res.send({ status: 400, err: err.message });
   }
 });
 
