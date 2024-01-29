@@ -29,6 +29,7 @@ export default (sequelize: any, DataTypes: any) => {
     static associate(models: any) {
       // define association here
       // User.hasMany(models.Request, { foreignKey: 'userId' });
+      // User.belongsTo(models.Post, { foreignKey: 'totalPost' });
     }
     validPassword(password: string): boolean {
       return bcryptjs.compareSync(password, this.password);

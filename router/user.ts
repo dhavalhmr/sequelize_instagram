@@ -1,5 +1,7 @@
 import express from 'express';
 import db from '../models';
+import passport from '../config/passport';
+import verifyToken from '../auth';
 
 const userRouter = express.Router();
 
@@ -15,6 +17,26 @@ userRouter.post('/create', (req, res) => {
   } catch (err) {
     res.send({ status: 400, err });
   }
+});
+
+userRouter.get('/get/:userId', verifyToken, (req, res, next) => {
+  passport.authenticate('local', async (err: any, user: any, info: any) => {
+    try {
+      const userId = (req?.user as any)?.dataValues.id;
+
+      if (userId) {
+        const user = await db.User.findByPk(userId, { include: [db?.Post] });
+        res.send({ status: 200, post: user.dataValues });
+      } else {
+        res.send({
+          status: 400,
+          message: `User does not found by userId:${userId}`,
+        });
+      }
+    } catch (err) {
+      res.send({ status: 400, err });
+    }
+  })(req, res, next);
 });
 
 export default userRouter;
