@@ -10,14 +10,37 @@ postRouter.use((req, res, next) => {
 });
 
 postRouter.post('/create', verifyToken, (req, res, next) => {
-  passport.authenticate('local', (err: any, user: any, info: any) => {
+  passport.authenticate('local', async (err: any, user: any, info: any) => {
     try {
-      db.Post.create({
+      await db.Post.create({
         userId: (req?.user as any)?.dataValues?.id,
         ...req?.body,
       })
         .then((result: any) => res.send({ status: 200, result }))
         .catch((err: any) => res.send({ status: 400, err }));
+    } catch (err) {
+      res.send({ status: 400, err });
+    }
+  })(req, res, next);
+});
+
+postRouter.get('/get/:postId', verifyToken, (req, res, next) => {
+  passport.authenticate('local', async (err: any, user: any, info: any) => {
+    try {
+      const postId = req?.params?.postId;
+
+      const userId = (req?.user as any)?.dataValues.id;
+
+      const post = await db.Post.findByPk(postId, { include: [db?.User] });
+
+      if (post.dataValues.userId === userId) {
+        res.send({ status: 200, post: post.dataValues });
+      } else {
+        res.send({
+          status: 400,
+          message: `User does not have post by postId:${postId}`,
+        });
+      }
     } catch (err) {
       res.send({ status: 400, err });
     }
@@ -65,28 +88,28 @@ postRouter.put('/like/:postId', verifyToken, (req, res, next) => {
 
       if (post) {
         // Check if the user has already liked the post
-        const alreadyLiked = post.like.userId.includes(userId);
+        const alreadyLiked = post.like.includes(userId);
 
         if (!alreadyLiked) {
           // Add user ID to the like array
-          post.like.userId.push(userId);
+          post.like.push(userId);
+          await db.Post.update({ like: post.like }, { where: { id: postId } });
         } else {
           // Remove user ID from the like array
-          post.like.userId = post.like.userId.filter(
-            (id: number) => id !== userId
-          );
+          post.like = post.like.filter((id: number) => id !== userId);
+          await db.Post.update({ like: post.like }, { where: { id: postId } });
         }
 
         // Save the updated post
         await post.save();
 
+        const updatedPost = await db.Post.findOne({ where: { id: postId } });
         // Return the updated post
-        return res.send({ status: 200, result: post.dataValues });
+        return res.status(200).json({ result: updatedPost.dataValues });
       } else {
-        return res.send({
-          status: 400,
-          message: `Post with ID ${postId} not found.`,
-        });
+        return res
+          .status(400)
+          .json({ message: `Post with ID ${postId} not found.` });
       }
     } catch (err: any) {
       res.send({ status: 400, err: err.message });

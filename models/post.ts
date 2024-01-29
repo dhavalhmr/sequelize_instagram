@@ -32,7 +32,7 @@ export default (sequelize: any, DataTypes: any) => {
       userId: { type: DataTypes.BIGINT, allowNull: false },
       description: DataTypes.STRING,
       photoUpload: { type: DataTypes.STRING, allowNull: false },
-      like: { type: DataTypes.JSON(), defaultValue: { userId: [] } },
+      like: { type: DataTypes.ARRAY(DataTypes.BIGINT), defaultValue: [] }, // userIds of users who are like post will be store particular post
       comment: { type: DataTypes.ARRAY(DataTypes.JSON), defaultValue: [] },
     },
     {
