@@ -6,7 +6,7 @@ export default (sequelize: any, DataTypes: any) => {
     userId: number;
     description: string;
     photoUpload: string;
-    like: string;
+    like: { userId: number[] };
     comment: string;
   };
   class Post extends Model<PostAttribute> implements PostAttribute {
@@ -14,7 +14,7 @@ export default (sequelize: any, DataTypes: any) => {
     userId!: number;
     description!: string;
     photoUpload!: string;
-    like!: string;
+    like!: { userId: number[] };
     comment!: string;
     /**
      * Helper method for defining associations.
@@ -32,7 +32,7 @@ export default (sequelize: any, DataTypes: any) => {
       userId: { type: DataTypes.BIGINT, allowNull: false },
       description: DataTypes.STRING,
       photoUpload: { type: DataTypes.STRING, allowNull: false },
-      like: { type: DataTypes.ARRAY(DataTypes.STRING), defaultValue: [] },
+      like: { type: DataTypes.JSON(), defaultValue: { userId: [] } },
       comment: { type: DataTypes.ARRAY(DataTypes.JSON), defaultValue: [] },
     },
     {

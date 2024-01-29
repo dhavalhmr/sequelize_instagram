@@ -37,6 +37,7 @@ authRouter.get('/logout', (req, res) => {
     }
     console.log('User Logged Out:', req.user); // Log the user who logged out
     console.log('Session after Logout:', req.session); // Log the session after logout
+    res.clearCookie('access_token');
     res.send({ message: 'Logged out successfully' });
   });
 });
