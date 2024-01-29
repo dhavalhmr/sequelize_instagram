@@ -88,15 +88,18 @@ postRouter.put('/like/:postId', verifyToken, (req, res, next) => {
 
       if (post) {
         // Check if the user has already liked the post
-        const alreadyLiked = post.like.includes(userId);
+        const alreadyLiked = post?.like?.userId?.includes(userId);
+        console.log('alreadyLiked:', alreadyLiked);
 
         if (!alreadyLiked) {
           // Add user ID to the like array
-          post.like.push(userId);
+          post.like.userId.push(userId);
           await db.Post.update({ like: post.like }, { where: { id: postId } });
         } else {
           // Remove user ID from the like array
-          post.like = post.like.filter((id: number) => id !== userId);
+          post.like.userId = post.like.userId.filter(
+            (id: number) => id !== userId
+          );
           await db.Post.update({ like: post.like }, { where: { id: postId } });
         }
 
