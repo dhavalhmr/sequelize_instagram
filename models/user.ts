@@ -61,7 +61,7 @@ export default (sequelize: any, DataTypes: any) => {
       password: {
         type: DataTypes.STRING,
         validate: {
-          isStrongPassword(value: string) {
+          isStrongPassword(value: string): void {
             // Use a regular expression to check for strong password requirements
             if (
               !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/.test(
@@ -91,7 +91,7 @@ export default (sequelize: any, DataTypes: any) => {
       hooks: {
         beforeCreate: async (user) => {
           try {
-            if (user.password) {
+            if (user.changed('password')) {
               const salt = await bcryptjs.genSaltSync(10);
               user.password = bcryptjs.hashSync(user.password, salt);
             }
@@ -101,7 +101,7 @@ export default (sequelize: any, DataTypes: any) => {
         },
         beforeUpdate: async (user) => {
           try {
-            if (user.password) {
+            if (user.changed('password')) {
               const salt = await bcryptjs.genSaltSync(10);
               user.password = bcryptjs.hashSync(user.password, salt);
             }
