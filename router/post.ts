@@ -16,10 +16,10 @@ postRouter.post('/create', verifyToken, (req, res, next) => {
         userId: (req?.user as any)?.dataValues?.id,
         ...req?.body,
       })
-        .then((result: any) => res.send({ status: 200, result }))
-        .catch((err: any) => res.send({ status: 400, err }));
+        .then((result: any) => res.status(200).send({ result }))
+        .catch((err: any) => res.status(400).send({ err }));
     } catch (err) {
-      res.send({ status: 400, err });
+      res.status(400).send({ err });
     }
   })(req, res, next);
 });
@@ -34,15 +34,14 @@ postRouter.get('/get/:postId', verifyToken, (req, res, next) => {
       const post = await db.Post.findByPk(postId, { include: [db?.User] });
 
       if (post.dataValues.userId === userId) {
-        res.send({ status: 200, post: post.dataValues });
+        res.status(200).send({ post: post.dataValues });
       } else {
-        res.send({
-          status: 400,
-          message: `User does not have post by postId:${postId}`,
-        });
+        res
+          .status(400)
+          .send({ message: `User does not have post by postId:${postId}` });
       }
     } catch (err) {
-      res.send({ status: 400, err });
+      res.status(400).send({ err });
     }
   })(req, res, next);
 });
@@ -64,16 +63,15 @@ postRouter.put('/update/:postId', verifyToken, (req, res, next) => {
 
         if (updatePost[0] === 1) {
           const newPost = await db?.Post?.findOne({ where: { id: postId } });
-          return res.send({ status: 200, result: newPost.dataValues });
+          return res.status(200).send({ result: newPost.dataValues });
         }
       } else {
-        return res.send({
-          status: 400,
-          message: `Post with ${postId} not updated`,
-        });
+        return res
+          .status(400)
+          .send({ message: `Post with ${postId} not updated` });
       }
     } catch (err: any) {
-      res.send({ status: 400, err: err.message });
+      res.status(400).send({ err: err.message });
     }
   })(req, res, next);
 });
@@ -115,7 +113,7 @@ postRouter.put('/like/:postId', verifyToken, (req, res, next) => {
           .json({ message: `Post with ID ${postId} not found.` });
       }
     } catch (err: any) {
-      res.send({ status: 400, err: err.message });
+      res.status(400).send({ err: err.message });
     }
   })(req, res, next);
 });

@@ -18,7 +18,7 @@ const verifyToken = async (req: any, res: any, next: any) => {
     if (!userData) throw new Error('User not found');
     else next();
   } catch (error) {
-    res.send({ status: 400, error });
+    res.status(400).send({ error });
   }
 };
 

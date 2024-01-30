@@ -9,13 +9,13 @@ userRouter.post('/create', (req, res) => {
   try {
     db.User.create(req.body)
       .then((result: object) => {
-        res.send({ status: 200, result });
+        res.status(200).send({ result });
       })
       .catch((err: object) => {
-        res.send({ status: 400, err });
+        res.status(400).send({ err });
       });
   } catch (err) {
-    res.send({ status: 400, err });
+    res.status(400).send({ err });
   }
 });
 
@@ -26,15 +26,14 @@ userRouter.get('/get/:userId', verifyToken, (req, res, next) => {
 
       if (userId) {
         const user = await db.User.findByPk(userId, { include: [db?.Post] });
-        res.send({ status: 200, post: user.dataValues });
+        res.status(200).send({ post: user.dataValues });
       } else {
-        res.send({
-          status: 400,
-          message: `User does not found by userId:${userId}`,
-        });
+        res
+          .status(400)
+          .send({ message: `User does not found by userId:${userId}` });
       }
     } catch (err) {
-      res.send({ status: 400, err });
+      res.status(400).send({ err });
     }
   })(req, res, next);
 });
