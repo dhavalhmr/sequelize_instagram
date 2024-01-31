@@ -52,6 +52,12 @@ app.use(
     cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }, // 30 days
   })
 );
+function isAuthenticated(req: any, res: any, next: any) {
+  if (req.isAuthenticated()) return next();
+  else return res.status(401).json({ error: 'User not authenticated' });
+}
+
+app.use(isAuthenticated);
 
 app.use(morgan('dev'));
 app.use(passport.initialize());
@@ -61,13 +67,6 @@ app.use('/auth', routes.auth);
 app.use('/user', routes.user);
 app.use('/post', routes.post);
 app.use('/follower', routes.follow);
-
-function isAuthenticated(req: any, res: any, next: any) {
-  if (req.isAuthenticated()) return next();
-  else return res.status(401).json({ error: 'User not authenticated' });
-}
-
-app.use(isAuthenticated);
 
 app.listen(port, async () => {
   await initializedDatabase();

@@ -1,8 +1,8 @@
 import { RequestHandler } from 'express';
 import db from '../models';
-import passport from '../config/passport';
+import Handler from '../helper/Handler';
 
-export const create: RequestHandler = (req, res) => {
+export const create: RequestHandler = Handler((req: any, res: any) => {
   try {
     db.User.create(req.body)
       .then((result: object) => {
@@ -14,10 +14,10 @@ export const create: RequestHandler = (req, res) => {
   } catch (err) {
     res.status(400).send({ err });
   }
-};
+});
 
-export const get: RequestHandler = (req, res, next) => {
-  passport.authenticate('local', async (err: any, user: any, info: any) => {
+export const get: RequestHandler = Handler(
+  async (req: any, res: any, next: any) => {
     try {
       const userId = (req?.user as any)?.dataValues.id;
 
@@ -32,5 +32,5 @@ export const get: RequestHandler = (req, res, next) => {
     } catch (err) {
       res.status(400).send({ err });
     }
-  })(req, res, next);
-};
+  }
+);

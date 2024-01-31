@@ -1,13 +1,13 @@
 import { RequestHandler } from 'express';
-import passport from '../config/passport';
 import db from '../models';
+import Handler from '../helper/Handler';
 
 type findAll = {
   dataValues: object;
 };
 
-export const follow: RequestHandler = (req, res, next) => {
-  passport.authenticate('local', async (err: any, user: any, info: any) => {
+export const follow: RequestHandler = Handler(
+  async (req: any, res: any, next: any) => {
     try {
       const receiverId: string = req?.params?.receiverId;
       const senderId: string = (req?.user as any)?.dataValues?.id;
@@ -33,11 +33,11 @@ export const follow: RequestHandler = (req, res, next) => {
     } catch (error: any) {
       return res.status(400).send({ error: error.message });
     }
-  })(req, res, next);
-};
+  }
+);
 
-export const pendingRequest: RequestHandler = (req, res, next) => {
-  passport.authenticate('local', async (err: any, user: any, info: any) => {
+export const pendingRequest: RequestHandler = Handler(
+  async (req: any, res: any, next: any) => {
     try {
       const receiverId: string = (req?.user as any)?.dataValues?.id; // login userId will be receiverId
 
@@ -50,11 +50,11 @@ export const pendingRequest: RequestHandler = (req, res, next) => {
     } catch (error: any) {
       return res.status(400).send({ error: error.message });
     }
-  })(req, res, next);
-};
+  }
+);
 
-export const updateStatus: RequestHandler = (req, res, next) => {
-  passport.authenticate('local', async (err: any, user: any, info: any) => {
+export const updateStatus: RequestHandler = Handler(
+  async (req: any, res: any, next: any) => {
     try {
       const status: string = req?.params?.status;
       const receiverId: string = (req?.user as any)?.dataValues?.id;
@@ -76,11 +76,11 @@ export const updateStatus: RequestHandler = (req, res, next) => {
     } catch (error: any) {
       return res.status(400).send({ error: error.message });
     }
-  })(req, res, next);
-};
+  }
+);
 
-export const getFollowers: RequestHandler = (req, res, next) => {
-  passport.authenticate('local', async (err: any, user: any, info: any) => {
+export const getFollowers: RequestHandler = Handler(
+  async (req: any, res: any, next: any) => {
     try {
       const receiverId: string = (req?.user as any)?.dataValues?.id;
 
@@ -90,11 +90,11 @@ export const getFollowers: RequestHandler = (req, res, next) => {
     } catch (error: any) {
       return res.status(400).send({ error: error.message });
     }
-  })(req, res, next);
-};
+  }
+);
 
-export const getFollowings: RequestHandler = (req, res, next) => {
-  passport.authenticate('local', async (err: any, user: any, info: any) => {
+export const getFollowings: RequestHandler = Handler(
+  async (req: any, res: any, next: any) => {
     try {
       const senderId = (req?.user as any)?.dataValues?.id;
 
@@ -104,5 +104,5 @@ export const getFollowings: RequestHandler = (req, res, next) => {
     } catch (error: any) {
       return res.status(400).send({ error: error.message });
     }
-  })(req, res, next);
-};
+  }
+);

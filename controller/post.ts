@@ -1,13 +1,13 @@
 import { RequestHandler } from 'express';
-import passport from '../config/passport';
 import db from '../models';
+import Handler from '../helper/Handler';
 
 type Post = {
   dataValues: { id: string; userId: string };
   like: { userId: Array<string> };
 };
-export const create: RequestHandler = (req, res, next) => {
-  passport.authenticate('local', async (err: any, user: any, info: any) => {
+export const create: RequestHandler = Handler(
+  async (req: any, res: any, next: any) => {
     try {
       await db.Post.create({
         userId: (req?.user as Post)?.dataValues?.id,
@@ -18,11 +18,11 @@ export const create: RequestHandler = (req, res, next) => {
     } catch (err) {
       res.status(400).send({ err });
     }
-  })(req, res, next);
-};
+  }
+);
 
-export const get: RequestHandler = (req, res, next) => {
-  passport.authenticate('local', async (err: any, user: any, info: any) => {
+export const get: RequestHandler = Handler(
+  async (req: any, res: any, next: any) => {
     try {
       const postId: string = req?.params?.postId;
       const userId: string = (req?.user as any)?.dataValues.id;
@@ -41,11 +41,11 @@ export const get: RequestHandler = (req, res, next) => {
     } catch (err) {
       res.status(400).send({ err });
     }
-  })(req, res, next);
-};
+  }
+);
 
-export const update: RequestHandler = (req, res, next) => {
-  passport.authenticate('local', async (err: any, user: any, info: any) => {
+export const update: RequestHandler = Handler(
+  async (req: any, res: any, next: any) => {
     try {
       const postId: string = req?.params?.postId;
       const userId: string = (req?.user as any)?.dataValues.id;
@@ -70,11 +70,11 @@ export const update: RequestHandler = (req, res, next) => {
     } catch (err: any) {
       res.status(400).send({ err: err.message });
     }
-  })(req, res, next);
-};
+  }
+);
 
-export const like: RequestHandler = (req, res, next) => {
-  passport.authenticate('local', async (err: any, user: any, info: any) => {
+export const like: RequestHandler = Handler(
+  async (req: any, res: any, next: any) => {
     try {
       const postId = req?.params?.postId;
       const userId = (req?.user as any)?.dataValues.id;
@@ -106,5 +106,5 @@ export const like: RequestHandler = (req, res, next) => {
     } catch (err: any) {
       res.status(400).send({ err: err.message });
     }
-  })(req, res, next);
-};
+  }
+);
