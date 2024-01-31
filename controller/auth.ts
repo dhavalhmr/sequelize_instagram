@@ -19,8 +19,13 @@ export const login: RequestHandler = (req, res, next) => {
       }
       console.log('User Authenticated:', user);
       console.log('Session:', req.session); // Log the session
-      const { username, email } = user?.dataValues;
-      const generateToken = jwt.sign({ username, email }, 'eugbf7153%*#^');
+      const { username, email }: { username: string; email: string } =
+        user?.dataValues;
+
+      const generateToken: string = jwt.sign(
+        { username, email },
+        'eugbf7153%*#^'
+      );
       res.cookie('access_token', generateToken);
       return res.status(200).send({ message: 'Login successful' });
     });

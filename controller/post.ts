@@ -2,15 +2,19 @@ import { RequestHandler } from 'express';
 import passport from '../config/passport';
 import db from '../models';
 
+type Post = {
+  dataValues: { id: string; userId: string };
+  like: { userId: Array<string> };
+};
 export const create: RequestHandler = (req, res, next) => {
   passport.authenticate('local', async (err: any, user: any, info: any) => {
     try {
       await db.Post.create({
-        userId: (req?.user as any)?.dataValues?.id,
+        userId: (req?.user as Post)?.dataValues?.id,
         ...req?.body,
       })
-        .then((result: any) => res.status(200).send({ result }))
-        .catch((err: any) => res.status(400).send({ err }));
+        .then((result: object) => res.status(200).send({ result }))
+        .catch((err: object) => res.status(400).send({ err }));
     } catch (err) {
       res.status(400).send({ err });
     }
@@ -20,11 +24,12 @@ export const create: RequestHandler = (req, res, next) => {
 export const get: RequestHandler = (req, res, next) => {
   passport.authenticate('local', async (err: any, user: any, info: any) => {
     try {
-      const postId = req?.params?.postId;
+      const postId: string = req?.params?.postId;
+      const userId: string = (req?.user as any)?.dataValues.id;
 
-      const userId = (req?.user as any)?.dataValues.id;
-
-      const post = await db.Post.findByPk(postId, { include: [db?.User] });
+      const post: Post = await db.Post.findByPk(postId, {
+        include: [db?.User],
+      });
 
       if (post.dataValues.userId === userId) {
         res.status(200).send({ post: post.dataValues });
@@ -42,15 +47,14 @@ export const get: RequestHandler = (req, res, next) => {
 export const update: RequestHandler = (req, res, next) => {
   passport.authenticate('local', async (err: any, user: any, info: any) => {
     try {
-      const postId = req?.params?.postId;
+      const postId: string = req?.params?.postId;
+      const userId: string = (req?.user as any)?.dataValues.id;
 
-      const userId = (req?.user as any)?.dataValues.id;
-
-      const oldPost = await db?.Post?.findOne({ where: { id: postId } });
+      const oldPost: Post = await db?.Post?.findOne({ where: { id: postId } });
 
       if (userId === oldPost.dataValues.userId) {
         // checking person who have uploaded post is updating post
-        const updatePost = await db?.Post?.update(req.body, {
+        const updatePost: Array<number> = await db?.Post?.update(req.body, {
           where: { id: oldPost.dataValues.id },
         });
 
@@ -75,12 +79,11 @@ export const like: RequestHandler = (req, res, next) => {
       const postId = req?.params?.postId;
       const userId = (req?.user as any)?.dataValues.id;
 
-      const post = await db?.Post?.findOne({ where: { id: postId } });
+      const post: Post = await db?.Post?.findOne({ where: { id: postId } });
 
       if (post) {
         // Check if the user has already liked the post
         const alreadyLiked = post?.like?.userId?.includes(userId);
-        console.log('alreadyLiked:', alreadyLiked);
 
         if (!alreadyLiked) {
           // Add user ID to the like array
@@ -88,14 +91,9 @@ export const like: RequestHandler = (req, res, next) => {
           await db.Post.update({ like: post.like }, { where: { id: postId } });
         } else {
           // Remove user ID from the like array
-          post.like.userId = post.like.userId.filter(
-            (id: number) => id !== userId
-          );
+          post.like.userId = post.like.userId.filter((id) => id !== userId);
           await db.Post.update({ like: post.like }, { where: { id: postId } });
         }
-
-        // Save the updated post
-        await post.save();
 
         const updatedPost = await db.Post.findOne({ where: { id: postId } });
         // Return the updated post

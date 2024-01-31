@@ -60,7 +60,7 @@ app.use(passport.session());
 app.use('/auth', routes.auth);
 app.use('/user', routes.user);
 app.use('/post', routes.post);
-app.use('/follwer', routes.follow);
+app.use('/follower', routes.follow);
 
 
 function isAuthenticated(req: any, res: any, next: any) {
