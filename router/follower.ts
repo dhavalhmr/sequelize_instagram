@@ -1,8 +1,7 @@
 import express from 'express';
 import verifyToken from '../auth';
 import {
-  confirmRequest,
-  deleteRequest,
+  updateStatus,
   follow,
   getFollowers,
   getFollowings,
@@ -17,12 +16,9 @@ followerRoute.post('/follow/:receiverId', verifyToken, follow);
 // get all pending request
 followerRoute.get('/getAllPendingRequest', verifyToken, pendingRequest);
 
-// confirm request
-followerRoute.get('/confirmRequest/:senderId', verifyToken, confirmRequest);
-
-// delete request
-// by swipping value of receiverId and senderId from frontend this api can call for receiver side and also sender side
-followerRoute.get('/deleteRequest/:senderId', verifyToken, deleteRequest);
+// confirm request, block user, delete request will handled from same api
+// Note: To unblock user change status to "Rejected" //TODO this thing can be done from frontend side
+followerRoute.get('/updateStatus/:senderId/:status', verifyToken, updateStatus);
 
 // get followers of login user
 followerRoute.get('/getFollowers', verifyToken, getFollowers);

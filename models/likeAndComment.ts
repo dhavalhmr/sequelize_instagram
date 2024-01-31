@@ -6,6 +6,7 @@ export default (sequelize: any, DataTypes: any) => {
     userId: number;
     postId: number;
     comment: string;
+    type: string;
   };
   class LikeAndComment
     extends Model<LikeAndCommentAttributes>
@@ -15,6 +16,7 @@ export default (sequelize: any, DataTypes: any) => {
     userId!: number;
     postId!: number;
     comment!: string;
+    type!: string;
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -30,6 +32,7 @@ export default (sequelize: any, DataTypes: any) => {
       userId: DataTypes.BIGINT,
       postId: DataTypes.BIGINT,
       comment: DataTypes.STRING,
+      type: { type: DataTypes.ENUM('Like', 'Comment') },
     },
     { timestamps: true, sequelize, modelName: 'LikeAndComment' }
   );

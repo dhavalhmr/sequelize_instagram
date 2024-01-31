@@ -28,7 +28,7 @@ export default (sequelize: any) => {
       id: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
       receiverId: DataTypes.BIGINT,
       senderId: DataTypes.BIGINT,
-      status: DataTypes.ENUM('Accepted', 'Rejected', 'Delete', 'Pending'),
+      status: DataTypes.ENUM('Accepted', 'Rejected',"Blocked", 'Pending'),
     },
     {
       timestamps: true,
