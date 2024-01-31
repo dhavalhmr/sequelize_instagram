@@ -62,7 +62,6 @@ app.use('/user', routes.user);
 app.use('/post', routes.post);
 app.use('/follower', routes.follow);
 
-
 function isAuthenticated(req: any, res: any, next: any) {
   if (req.isAuthenticated()) return next();
   else return res.status(401).json({ error: 'User not authenticated' });
