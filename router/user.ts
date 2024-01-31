@@ -6,7 +6,7 @@ const userRouter = express.Router();
 
 userRouter.post('/create', create);
 
-userRouter.get('/get/:userId', verifyToken, get);
+userRouter.get('/get', verifyToken, get);
 
 export default userRouter;
 
