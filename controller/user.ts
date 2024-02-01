@@ -7,8 +7,10 @@ export const get: RequestHandler = Handler(
     const userId = (req?.user as any)?.dataValues.id;
 
     if (userId) {
-      const user = await db.User.findByPk(userId, { include: [db?.Post] });
-      return res.status(200).send({ post: user });
+      const user = await db.User.findByPk(userId, {
+        include: { model: db?.Post, as: 'posts' },
+      });
+      return res.status(200).json({ post: user.dataValues });
     } else {
       return res
         .status(400)

@@ -52,12 +52,6 @@ app.use(
     cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }, // 30 days
   })
 );
-app.use((req, res, next) => {
-  if (req.path !== '/auth/create') {
-    req.user ? next() : res.status(401);
-  }
-  next();
-});
 
 app.use(morgan('dev'));
 app.use(passport.initialize());

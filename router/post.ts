@@ -4,6 +4,15 @@ import { create, get, like, update } from '../controller/post';
 
 const postRouter = express?.Router();
 
+postRouter.use((req, res, next) => {
+  if (req.user) {
+    console.log('req.user:', req.user);
+    next();
+  } else {
+    return res.status(401).json({ message: 'User Not Authenticate' });
+  }
+});
+
 postRouter.post('/create', create);
 
 postRouter.get('/get/:postId', verifyToken, get);
