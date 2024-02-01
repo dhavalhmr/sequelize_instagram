@@ -8,7 +8,6 @@ type UserAttributes = {
   email: string;
   password: string;
   dob: Date;
-  // totalPost: string;
   bio: string;
 };
 
@@ -19,7 +18,6 @@ export default (sequelize: any, DataTypes: any) => {
     email!: string;
     password!: string;
     dob!: Date;
-    // totalPost!: string;
     bio!: string;
     /**
      * Helper method for defining associations.
@@ -27,13 +25,7 @@ export default (sequelize: any, DataTypes: any) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models: any) {
-      // define association here
-      // User.hasMany(models.Post, { foreignKey: 'userId' });
       User.hasMany(models.Post, { as: 'posts', foreignKey: 'userId' });
-      // User.hasMany(models.Post, { as: 'totalPost', foreignKey: 'userId' });
-      // User.hasMany(models.Follow, {as:"Followers",foreignKey:"receiverId"});
-      // User.hasMany(models.Follow, {as:"Followings",foreignKey:"senderId"});
-      // User.belongsTo(models.Post, { foreignKey: 'totalPost' });
     }
     validPassword(password: string): boolean {
       return bcryptjs.compareSync(password, this.password);
@@ -88,7 +80,6 @@ export default (sequelize: any, DataTypes: any) => {
           },
         },
       },
-      // totalPost: DataTypes.ARRAY(DataTypes.STRING),
       bio: DataTypes.STRING(500),
     },
     {
