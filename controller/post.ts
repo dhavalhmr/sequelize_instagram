@@ -82,15 +82,17 @@ export const like: RequestHandler = Handler(
       const post: Post = await db?.Post?.findOne({ where: { id: postId } });
 
       if (post) {
-        // Check if the user has already liked the post
-        const alreadyLiked = post?.like?.userId?.includes(userId);
-
         if (type === 'Like') {
+          // Check if the user has already liked the post
           const like = await db.LikeAndComment.findOne({
-            type: 'Like',
-            postId,
-            userId,
+            where: {
+              type: 'Like',
+              postId,
+              userId,
+              comment: null,
+            },
           });
+          console.log('like:', like);
 
           if (!like) {
             // Add user ID to the like array
