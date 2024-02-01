@@ -4,17 +4,15 @@ import { create, get, like, update } from '../controller/post';
 
 const postRouter = express?.Router();
 
-postRouter.use((req, res, next) => {
-  req.user ? next() : res.send(401);
-});
-
-postRouter.post('/create', verifyToken, create);
+postRouter.post('/create', create);
 
 postRouter.get('/get/:postId', verifyToken, get);
 
 postRouter.put('/update/:postId', verifyToken, update);
 
-postRouter.put('/like/:postId', verifyToken, like);
+postRouter.put('/:postId/:type(Like|Comment)', verifyToken, like);
+
+postRouter.post('/comment/:postId');
 
 export default postRouter;
 

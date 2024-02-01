@@ -1,7 +1,10 @@
 import express from 'express';
-import { login, logout } from '../controller/auth';
+import { create, login, logout } from '../controller/auth';
+import passport from '../config/passport';
 
 const authRouter = express.Router();
+
+authRouter.post('/create', create);
 
 authRouter.post('/login', login);
 

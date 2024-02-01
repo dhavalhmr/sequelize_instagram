@@ -16,7 +16,7 @@ export const create: RequestHandler = Handler(
         .then((result: object) => res.status(200).send({ result }))
         .catch((err: object) => res.status(400).send({ err }));
     } catch (err) {
-      res.status(400).send({ err });
+      return res.status(400).send({ err });
     }
   }
 );
@@ -39,7 +39,7 @@ export const get: RequestHandler = Handler(
           .send({ message: `User does not have post by postId:${postId}` });
       }
     } catch (err) {
-      res.status(400).send({ err });
+      return res.status(400).send({ err });
     }
   }
 );
@@ -68,7 +68,7 @@ export const update: RequestHandler = Handler(
           .send({ message: `Post with ${postId} not updated` });
       }
     } catch (err: any) {
-      res.status(400).send({ err: err.message });
+      return res.status(400).send({ err: err.message });
     }
   }
 );
@@ -76,7 +76,7 @@ export const update: RequestHandler = Handler(
 export const like: RequestHandler = Handler(
   async (req: Request, res: Response) => {
     try {
-      const postId = req?.params?.postId;
+      const { postId, type } = req?.params;
       const userId = (req?.user as any)?.dataValues.id;
 
       const post: Post = await db?.Post?.findOne({ where: { id: postId } });
@@ -85,26 +85,61 @@ export const like: RequestHandler = Handler(
         // Check if the user has already liked the post
         const alreadyLiked = post?.like?.userId?.includes(userId);
 
-        if (!alreadyLiked) {
-          // Add user ID to the like array
-          post.like.userId.push(userId);
-          await db.Post.update({ like: post.like }, { where: { id: postId } });
-        } else {
+        if (type === 'Like') {
+          const like = await db.LikeAndComment.findOne({
+            type: 'Like',
+            postId,
+            userId,
+          });
+
+          if (!like) {
+            // Add user ID to the like array
+            post.like.userId.push(userId);
+            await db.Post.update(
+              { like: post.like, type: type },
+              { where: { id: postId } }
+            );
+
+            const newLike = await db.LikeAndComment.create({
+              type: 'Like',
+              postId,
+              userId,
+            });
+            return res.status(200).json({ newLike });
+          }
           // Remove user ID from the like array
+          await like.destroy();
           post.like.userId = post.like.userId.filter((id) => id !== userId);
           await db.Post.update({ like: post.like }, { where: { id: postId } });
+          return res.status(200).json({ message: 'Dislike successfully' });
         }
 
-        const updatedPost = await db.Post.findOne({ where: { id: postId } });
-        // Return the updated post
-        return res.status(200).json({ result: updatedPost.dataValues });
+        if (type === 'Comment') {
+          const { comment } = req?.body;
+
+          if (!comment) {
+            return res.status(400).json('Message is required to add comment');
+          }
+          await db.LikeAndComment.create({
+            type: 'Comment',
+            postId,
+            userId,
+            comment,
+          });
+        }
+        const likeAndComment = await db.LikeAndComment.findOne({
+          where: { type, postId, userId },
+          order: [['createdAt', 'DESC']],
+        });
+        return res.status(200).send({ likeAndComment });
       } else {
         return res
           .status(400)
           .json({ message: `Post with ID ${postId} not found.` });
       }
     } catch (err: any) {
-      res.status(400).send({ err: err.message });
+      console.log('err:', err);
+      return res.status(400).send({ err: err.message });
     }
   }
 );

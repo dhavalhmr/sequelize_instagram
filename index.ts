@@ -52,12 +52,12 @@ app.use(
     cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }, // 30 days
   })
 );
-function isAuthenticated(req: any, res: any, next: any) {
-  if (req.isAuthenticated()) return next();
-  else return res.status(401).json({ error: 'User not authenticated' });
-}
-
-app.use(isAuthenticated);
+app.use((req, res, next) => {
+  if (req.path !== '/auth/create') {
+    req.user ? next() : res.status(401);
+  }
+  next();
+});
 
 app.use(morgan('dev'));
 app.use(passport.initialize());

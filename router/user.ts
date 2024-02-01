@@ -1,10 +1,8 @@
 import express from 'express';
 import verifyToken from '../auth';
-import { create, get } from '../controller/user';
+import { get } from '../controller/user';
 
 const userRouter = express.Router();
-
-userRouter.post('/create', create);
 
 userRouter.get('/get', verifyToken, get);
 
