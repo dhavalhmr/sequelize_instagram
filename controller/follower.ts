@@ -1,6 +1,6 @@
 import { RequestHandler, Request, Response } from 'express';
 import db from '../models';
-import Handler from '../helper/Handler';
+import Handler from '../utils/Handler';
 
 type findAll = {
   dataValues: object;

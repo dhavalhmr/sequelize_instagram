@@ -1,6 +1,6 @@
 import { Request, RequestHandler, Response } from 'express';
 import db from '../models';
-import Handler from '../helper/Handler';
+import Handler from '../utils/Handler';
 
 export const get: RequestHandler = Handler(
   async (req: Request, res: Response) => {
