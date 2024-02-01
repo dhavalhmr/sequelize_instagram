@@ -1,4 +1,4 @@
-import { RequestHandler } from 'express';
+import { Request, RequestHandler, Response } from 'express';
 import db from '../models';
 import Handler from '../helper/Handler';
 
@@ -7,7 +7,7 @@ type Post = {
   like: { userId: Array<string> };
 };
 export const create: RequestHandler = Handler(
-  async (req: any, res: any, next: any) => {
+  async (req: Request, res: Response) => {
     try {
       await db.Post.create({
         userId: (req?.user as Post)?.dataValues?.id,
@@ -22,7 +22,7 @@ export const create: RequestHandler = Handler(
 );
 
 export const get: RequestHandler = Handler(
-  async (req: any, res: any, next: any) => {
+  async (req: Request, res: Response) => {
     try {
       const postId: string = req?.params?.postId;
       const userId: string = (req?.user as any)?.dataValues.id;
@@ -45,7 +45,7 @@ export const get: RequestHandler = Handler(
 );
 
 export const update: RequestHandler = Handler(
-  async (req: any, res: any, next: any) => {
+  async (req: Request, res: Response) => {
     try {
       const postId: string = req?.params?.postId;
       const userId: string = (req?.user as any)?.dataValues.id;
@@ -74,7 +74,7 @@ export const update: RequestHandler = Handler(
 );
 
 export const like: RequestHandler = Handler(
-  async (req: any, res: any, next: any) => {
+  async (req: Request, res: Response) => {
     try {
       const postId = req?.params?.postId;
       const userId = (req?.user as any)?.dataValues.id;

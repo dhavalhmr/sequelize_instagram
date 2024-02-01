@@ -1,4 +1,4 @@
-import { RequestHandler } from 'express';
+import { RequestHandler, Request, Response } from 'express';
 import db from '../models';
 import Handler from '../helper/Handler';
 
@@ -7,7 +7,7 @@ type findAll = {
 };
 
 export const follow: RequestHandler = Handler(
-  async (req: any, res: any, next: any) => {
+  async (req: Request, res: Response) => {
     try {
       const receiverId: string = req?.params?.receiverId;
       const senderId: string = (req?.user as any)?.dataValues?.id;
@@ -37,7 +37,7 @@ export const follow: RequestHandler = Handler(
 );
 
 export const pendingRequest: RequestHandler = Handler(
-  async (req: any, res: any, next: any) => {
+  async (req: Request, res: Response) => {
     try {
       const receiverId: string = (req?.user as any)?.dataValues?.id; // login userId will be receiverId
 
@@ -54,7 +54,7 @@ export const pendingRequest: RequestHandler = Handler(
 );
 
 export const updateStatus: RequestHandler = Handler(
-  async (req: any, res: any, next: any) => {
+  async (req: Request, res: Response) => {
     try {
       const status: string = req?.params?.status;
       const receiverId: string = (req?.user as any)?.dataValues?.id;
@@ -80,7 +80,7 @@ export const updateStatus: RequestHandler = Handler(
 );
 
 export const getFollowers: RequestHandler = Handler(
-  async (req: any, res: any, next: any) => {
+  async (req: Request, res: Response) => {
     try {
       const receiverId: string = (req?.user as any)?.dataValues?.id;
 
@@ -94,7 +94,7 @@ export const getFollowers: RequestHandler = Handler(
 );
 
 export const getFollowings: RequestHandler = Handler(
-  async (req: any, res: any, next: any) => {
+  async (req: Request, res: Response) => {
     try {
       const senderId = (req?.user as any)?.dataValues?.id;
 

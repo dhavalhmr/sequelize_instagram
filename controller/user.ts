@@ -1,8 +1,8 @@
-import { RequestHandler } from 'express';
+import { Request, RequestHandler, Response } from 'express';
 import db from '../models';
 import Handler from '../helper/Handler';
 
-export const create: RequestHandler = Handler((req: any, res: any) => {
+export const create: RequestHandler = Handler((req: Request, res: Response) => {
   try {
     db.User.create(req.body)
       .then((result: object) => {
@@ -17,7 +17,7 @@ export const create: RequestHandler = Handler((req: any, res: any) => {
 });
 
 export const get: RequestHandler = Handler(
-  async (req: any, res: any, next: any) => {
+  async (req: Request, res: Response) => {
     try {
       const userId = (req?.user as any)?.dataValues.id;
 

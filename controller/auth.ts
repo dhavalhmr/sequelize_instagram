@@ -1,6 +1,7 @@
-import { RequestHandler } from 'express';
+import { Request, RequestHandler, Response } from 'express';
 import passport from '../config/passport';
 import jwt from 'jsonwebtoken';
+import Handler from '../helper/Handler';
 
 export const login: RequestHandler = (req, res, next) => {
   passport.authenticate('local', (err: any, user: any, info: any) => {
@@ -32,7 +33,7 @@ export const login: RequestHandler = (req, res, next) => {
   })(req, res, next);
 };
 
-export const logout: RequestHandler = (req, res) => {
+export const logout: RequestHandler = Handler((req: Request, res: Response) => {
   req.logout((err) => {
     if (err) {
       console.error('Logout Error:', err);
@@ -43,4 +44,4 @@ export const logout: RequestHandler = (req, res) => {
     res.clearCookie('access_token');
     res.status(200).send({ message: 'Logged out successfully' });
   });
-};
+});
