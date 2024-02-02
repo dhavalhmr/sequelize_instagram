@@ -10,11 +10,12 @@ const generateAccessAndRefreshTokens = async (userId: number) => {
   try {
     const user = await db.User.findByPk(userId);
     const { username, email } = user;
+    // const expireTimeInSeconds = 1000 * 3; // 3 seconds
     const accessToken = jwt.sign({ username, email }, 'eugbf7153%*#^', {
       expiresIn: '1h',
     });
     const refreshToken = jwt.sign({ username, email }, '12345678', {
-      expiresIn: '1h',
+      expiresIn: '30d',
     });
 
     user.refreshToken = refreshToken;
@@ -28,6 +29,7 @@ const generateAccessAndRefreshTokens = async (userId: number) => {
     );
   }
 };
+
 export const create = Handler(async (req: Request, res: Response) => {
   try {
     await db.User.create(req.body)
@@ -51,12 +53,6 @@ export const login: RequestHandler = (req, res, next) => {
       email,
       id,
     }: { username: string; email: string; id: number } = user?.dataValues;
-
-    const generateToken: string = jwt.sign(
-      { username, email },
-      'eugbf7153%*#^',
-      { expiresIn: '1h' }
-    );
 
     const { refreshToken, accessToken } = await generateAccessAndRefreshTokens(
       id
@@ -88,6 +84,7 @@ export const logout: RequestHandler = Handler((req: Request, res: Response) => {
 export const refreshAccessToken = Handler(
   async (req: Request, res: Response) => {
     const incomingRefreshToken = req.cookies.refreshToken;
+    console.log('incomingRefreshToken:', incomingRefreshToken);
 
     if (!incomingRefreshToken) {
       throw new ApiError(401, 'Unauthorized request');
@@ -107,17 +104,13 @@ export const refreshAccessToken = Handler(
         throw new ApiError(401, 'Invalid refresh token');
       }
 
-      if (incomingRefreshToken !== user?.refreshToken) {
-        throw new ApiError(401, 'Refresh token is expired or used');
-      }
-
       const options = {
         httpOnly: true,
         secure: true,
       };
 
       const { accessToken, refreshToken } =
-        await generateAccessAndRefreshTokens(user._id);
+        await generateAccessAndRefreshTokens(user.id);
 
       return res
         .status(200)

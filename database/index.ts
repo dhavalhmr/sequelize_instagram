@@ -19,7 +19,7 @@ const initializedDatabase = async () => {
 
   const sync = () => {
     sequelize
-      .sync({ alter: true, force: true })
+      .sync({ alter: true, force: false })
       .then((): void =>
         console.log('Database has been syncronise successfully')
       )
