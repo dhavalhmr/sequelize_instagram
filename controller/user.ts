@@ -8,9 +8,25 @@ export const get: RequestHandler = Handler(
 
     if (userId) {
       const user = await db.User.findByPk(userId, {
-        include: [{ model: db?.Post, as: 'posts' }, { model: db?.Follow }],
+        include: [
+          { model: db?.Post, as: 'posts' },
+          {
+            model: db?.Follow,
+            as: 'follower',
+            attributes: { exclude: ['receiverId', 'createdAt'] },
+            // where: { status: 'Accepted' },
+            // include: { model: db.User, as: 'sender_user' },
+          },
+          {
+            model: db?.Follow,
+            as: 'following',
+            attributes: { exclude: ['receiverId', 'createdAt'] },
+            // where: { status: 'Accepted' },
+            // include: { model: db.User, as: 'receiver_user' },
+          },
+        ],
       });
-      return res.status(200).json({ post: user.dataValues });
+      return res.status(200).json({ post: user });
     } else {
       return res
         .status(400)

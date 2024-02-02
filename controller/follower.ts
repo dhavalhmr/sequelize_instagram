@@ -59,7 +59,7 @@ export const updateStatus: RequestHandler = Handler(
         .then((result: object) => res.status(200).send({ result }))
         .catch((err: object) => res.status(400).send({ err }));
     }
-    if (status === 'Blocked' || 'Rejected') {
+    if (status === 'Blocked' || status === 'Rejected') {
       await db.Follow.update({ status }, { where: { receiverId, senderId } });
     }
   }
@@ -69,10 +69,10 @@ export const getFollowers: RequestHandler = Handler(
   async (req: Request, res: Response) => {
     const receiverId: string = (req?.user as any)?.dataValues?.id;
 
-    await db.Follow.findAll(
-      { attributes: ['senderId', 'status'] },
-      { where: { receiverId, status: 'Accepted' } }
-    )
+    await db.Follow.findAll({
+      attributes: ['senderId', 'status'],
+      where: { receiverId, status: 'Accepted' },
+    })
       .then((result: object) => res.status(200).send({ result }))
       .catch((err: object) => res.status(400).send({ err }));
   }
@@ -82,10 +82,10 @@ export const getFollowings: RequestHandler = Handler(
   async (req: Request, res: Response) => {
     const senderId = (req?.user as any)?.dataValues?.id;
 
-    await db.Follow.findAll(
-      { attributes: ['receiverId', 'status'] },
-      { where: { senderId, status: 'Accepted' } }
-    )
+    await db.Follow.findAll({
+      attributes: ['receiverId', 'status'],
+      where: { senderId, status: 'Accepted' },
+    })
       .then((result: object) => res.status(200).send({ result }))
       .catch((err: object) => res.status(400).send({ err }));
   }

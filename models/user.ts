@@ -19,21 +19,22 @@ export default (sequelize: any, DataTypes: any) => {
     password!: string;
     dob!: Date;
     bio!: string;
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models: any) {
       User.hasMany(models.Post, { as: 'posts', foreignKey: 'userId' });
+      User.hasMany(models.Follow, {
+        as: 'follower',
+        foreignKey: 'receiverId',
+      });
+      User.hasMany(models.Follow, {
+        as: 'following',
+        foreignKey: 'senderId',
+      });
     }
     validPassword(password: string): boolean {
       return bcryptjs.compareSync(password, this.password);
     }
   }
 
-  // User.associate = function (models) {
-  // };
   User.init(
     {
       id: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
