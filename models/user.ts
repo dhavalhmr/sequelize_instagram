@@ -9,7 +9,6 @@ type UserAttributes = {
   password: string;
   dob: Date;
   bio: string;
-  refreshToken: string;
 };
 
 export default (sequelize: any, DataTypes: any) => {
@@ -20,7 +19,6 @@ export default (sequelize: any, DataTypes: any) => {
     password!: string;
     dob!: Date;
     bio!: string;
-    refreshToken!: string;
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -83,7 +81,6 @@ export default (sequelize: any, DataTypes: any) => {
         },
       },
       bio: DataTypes.STRING(500),
-      refreshToken: DataTypes.STRING,
     },
     {
       hooks: {
