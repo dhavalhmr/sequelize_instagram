@@ -46,25 +46,31 @@ export const login: RequestHandler = (req, res, next) => {
       return res.status(401).json({ message: 'Authentication failed' });
     }
 
-    console.log('User Authenticated:', user);
-    console.log('Session:', req.session); // Log the session
-    const {
-      username,
-      email,
-      id,
-    }: { username: string; email: string; id: number } = user?.dataValues;
+    req.logIn(user, async (loginErr) => {
+      if (loginErr) {
+        console.error('Login Error:', loginErr);
+        return res.status(500).send({ message: 'Login Failed' });
+      }
 
-    const { refreshToken, accessToken } = await generateAccessAndRefreshTokens(
-      id
-    );
+      console.log('User Authenticated:', user);
+      console.log('Session:', req.session); // Log the session
+      const {
+        username,
+        email,
+        id,
+      }: { username: string; email: string; id: number } = user?.dataValues;
 
-    res
-      .cookie('access_token', accessToken)
-      .cookie('refreshToken', refreshToken);
+      const { refreshToken, accessToken } =
+        await generateAccessAndRefreshTokens(id);
 
-    return res
-      .status(200)
-      .send({ message: 'Login successful', accessToken, refreshToken });
+      res
+        .cookie('access_token', accessToken)
+        .cookie('refreshToken', refreshToken);
+
+      return res
+        .status(200)
+        .send({ message: 'Login successful', accessToken, refreshToken });
+    });
   })(req, res, next);
 };
 
@@ -104,18 +110,13 @@ export const refreshAccessToken = Handler(
         throw new ApiError(401, 'Invalid refresh token');
       }
 
-      const options = {
-        httpOnly: true,
-        secure: true,
-      };
-
       const { accessToken, refreshToken } =
         await generateAccessAndRefreshTokens(user.id);
 
       return res
         .status(200)
-        .cookie('accessToken', accessToken, options)
-        .cookie('refreshToken', refreshToken, options)
+        .cookie('access_token', accessToken)
+        .cookie('refreshToken', refreshToken)
         .json(
           new ApiResponse(
             200,
