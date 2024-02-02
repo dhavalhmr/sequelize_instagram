@@ -1,12 +1,13 @@
 import express from 'express';
-import { create, login, logout } from '../controller/auth';
-import passport from '../config/passport';
+import { create, login, logout, refreshAccessToken } from '../controller/auth';
 
 const authRouter = express.Router();
 
 authRouter.post('/create', create);
 
 authRouter.post('/login', login);
+
+authRouter.post('/refresh-token', refreshAccessToken);
 
 authRouter.get('/logout', logout);
 
