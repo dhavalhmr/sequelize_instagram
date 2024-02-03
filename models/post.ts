@@ -5,17 +5,15 @@ export default (sequelize: any, DataTypes: any) => {
     id: number;
     description: string;
     photoUpload: string;
-    like: { userId: number[] };
-    comment: string;
   };
   class Post extends Model<PostAttribute> implements PostAttribute {
     id!: number;
     description!: string;
     photoUpload!: string;
-    like!: { userId: number[] };
-    comment!: string;
     static associate(models: any) {
       Post.belongsTo(models.User, { foreignKey: 'userId' });
+      Post.hasMany(models.LikeAndComment, { foreignKey: 'userId', as: 'like' });
+      Post.hasMany(models.LikeAndComment, { foreignKey: 'userId', as: 'comment' });
     }
   }
   Post.init(
@@ -23,11 +21,6 @@ export default (sequelize: any, DataTypes: any) => {
       id: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
       description: DataTypes.STRING,
       photoUpload: { type: DataTypes.STRING, allowNull: false },
-      like: {
-        type: DataTypes.JSON(DataTypes.ARRAY(DataTypes.BIGINT)),
-        defaultValue: { userId: [] },
-      }, // userIds of users who are like post will be store particular post
-      comment: { type: DataTypes.ARRAY(DataTypes.JSON), defaultValue: [] },
     },
     {
       timestamps: true,

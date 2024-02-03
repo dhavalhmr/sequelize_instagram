@@ -3,34 +3,23 @@ import { Model } from 'sequelize';
 export default (sequelize: any, DataTypes: any) => {
   type LikeAndCommentAttributes = {
     id: number;
-    userId: number;
-    postId: number;
     comment: string;
     type: string;
   };
   class LikeAndComment
     extends Model<LikeAndCommentAttributes>
-    implements LikeAndCommentAttributes
-  {
+    implements LikeAndCommentAttributes {
     id!: number;
-    userId!: number;
-    postId!: number;
     comment!: string;
     type!: string;
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models: any) {
-      // define association here
+      LikeAndComment.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
+      LikeAndComment.belongsTo(models.Post, { foreignKey: 'postId' });
     }
   }
   LikeAndComment.init(
     {
       id: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
-      userId: DataTypes.BIGINT,
-      postId: DataTypes.BIGINT,
       comment: DataTypes.STRING,
       type: { type: DataTypes.ENUM('Like', 'Comment') },
     },

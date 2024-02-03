@@ -20,6 +20,7 @@ export default (sequelize: any, DataTypes: any) => {
     dob!: Date;
     bio!: string;
     static associate(models: any) {
+      
       User.hasMany(models.Post, { as: 'posts', foreignKey: 'userId' });
       User.hasMany(models.Follow, {
         as: 'follower',

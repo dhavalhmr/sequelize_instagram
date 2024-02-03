@@ -26,7 +26,7 @@ export const get: RequestHandler = Handler(
       include: [db?.User],
     });
 
-    if (post.dataValues.userId === userId) {
+    if (post.dataValues) {
       res.status(200).send({ post: post.dataValues });
     } else {
       res
@@ -71,6 +71,7 @@ export const like: RequestHandler = Handler(
     if (post) {
       if (type === 'Like') {
         // Check if the user has already liked the post
+
         const like = await db.LikeAndComment.findOne({
           where: {
             type: 'Like',
@@ -79,27 +80,18 @@ export const like: RequestHandler = Handler(
             comment: null,
           },
         });
-        console.log('like:', like);
 
         if (!like) {
-          // Add user ID to the like array
-          post.like.userId.push(userId);
-          await db.Post.update(
-            { like: post.like, type: type },
-            { where: { id: postId } }
-          );
-
           const newLike = await db.LikeAndComment.create({
             type: 'Like',
             postId,
             userId,
           });
+
           return res.status(200).json({ newLike });
         }
-        // Remove user ID from the like array
+        // Remove like ID from the like table
         await like.destroy();
-        post.like.userId = post.like.userId.filter((id) => id !== userId);
-        await db.Post.update({ like: post.like }, { where: { id: postId } });
         return res.status(200).json({ message: 'Dislike successfully' });
       }
 

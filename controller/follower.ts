@@ -16,13 +16,15 @@ export const follow: RequestHandler = Handler(
 
     await db.User.findByPk(receiverId)
       .then(async () => {
-        const alreadyFollowed: findAll = await db.Follow.findAll({
+        const alreadyFollowed: Array<findAll> = await db.Follow.findAll({
           where: { senderId, receiverId, status: 'Pending' },
         });
 
-        if (alreadyFollowed.dataValues) {
+        if (alreadyFollowed.length > 0 && alreadyFollowed[0].dataValues) {
           return res.status(200).send({ message: 'Already followed' });
-        } else {
+        }
+
+        if (alreadyFollowed.length === 0) {
           await db.Follow.create({ senderId, receiverId, status: 'Pending' })
             .then((follow: object) => res.status(200).send({ follow }))
             .catch((err: object) => res.status(400).send({ err }));
@@ -72,6 +74,20 @@ export const getFollowers: RequestHandler = Handler(
     await db.Follow.findAll({
       attributes: ['senderId', 'status'],
       where: { receiverId, status: 'Accepted' },
+      include: {
+        model: db.User,
+        as: 'sender',
+        attributes: {
+          exclude: [
+            'email',
+            'password',
+            'dob',
+            'bio',
+            'createdAt',
+            'updatedAt',
+          ],
+        },
+      },
     })
       .then((result: object) => res.status(200).send({ result }))
       .catch((err: object) => res.status(400).send({ err }));

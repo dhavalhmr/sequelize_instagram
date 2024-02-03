@@ -6,7 +6,7 @@ const postRouter = express?.Router();
 
 postRouter.use((req, res, next) => {
   if (req.user) {
-    console.log('req.user:', req.user);
+    console.log('req.user============>:', (req.user as any).dataValues);
     next();
   } else {
     return res.status(401).json({ message: 'User Not Authenticate' });
