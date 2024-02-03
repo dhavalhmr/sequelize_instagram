@@ -32,7 +32,9 @@ export const get: RequestHandler = Handler(
                 as: 'comment',
                 required: false,
                 where: { type: 'Comment' },
-                attributes: { exclude: ['id', 'like', 'createdAt', 'type'] },
+                attributes: {
+                  exclude: ['id', 'like', 'createdAt', 'type', 'postId'],
+                },
                 include: [
                   {
                     model: db.User,
