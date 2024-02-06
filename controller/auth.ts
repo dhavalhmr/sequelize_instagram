@@ -5,6 +5,7 @@ import Handler from '../utils/Handler';
 import db from '../models';
 import { ApiError } from '../utils/ErrorHandler';
 import { ApiResponse } from '../utils/ResponseHandler';
+import { createUser, findUser } from '../service/user';
 
 const generateAccessAndRefreshTokens = async (userId: number) => {
   try {
@@ -32,11 +33,11 @@ const generateAccessAndRefreshTokens = async (userId: number) => {
 
 export const create = Handler(async (req: Request, res: Response) => {
   try {
-    await db.User.create(req.body)
-      .then((result: object) => res.status(200).send({ result }))
-      .catch((err: object) => res.status(400).send({ err }));
-  } catch (err) {
-    return res.status(400).send({ err });
+    const createdUser = await createUser(req.body);
+
+    return res.status(200).json({ user: createdUser });
+  } catch (error) {
+    return res.status(400).json({ error });
   }
 });
 
@@ -104,7 +105,7 @@ export const refreshAccessToken = Handler(
 
       const { username, email } = decodedToken;
 
-      const user = await db.User.findOne({ where: { username, email } });
+      const user = await findUser({ username, email });
 
       if (!user) {
         throw new ApiError(401, 'Invalid refresh token');

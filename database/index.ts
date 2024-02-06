@@ -16,7 +16,7 @@ const initializedDatabase = async () => {
     console.log('Error while initializing Database');
   }
 
-  const sync = () => {
+  function sync() {
     sequelize
       .sync({ alter: true, force: false })
       .then((): void =>
@@ -25,7 +25,7 @@ const initializedDatabase = async () => {
       .catch((err: any): void =>
         console.log('Database has thrown error in syncronise', err)
       );
-  };
+  }
 };
 
 export default initializedDatabase;

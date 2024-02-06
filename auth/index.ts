@@ -1,6 +1,6 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import db from '../models';
 import { Request, Response } from 'express';
+import { findUser } from '../service/user';
 
 const verifyToken = async (req: Request, res: Response, next: any) => {
   try {
@@ -16,7 +16,7 @@ const verifyToken = async (req: Request, res: Response, next: any) => {
 
     const { username, email } = verifiedToken as JwtPayload;
 
-    const userData = await db.User.findOne({ where: { username, email } });
+    const userData = await findUser({ username, email });
 
     if (!userData) throw new Error('User not found');
     else next();
