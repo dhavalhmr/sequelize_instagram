@@ -1,4 +1,4 @@
-import { Request, RequestHandler, Response } from 'express';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
 import passport from '../config/passport';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import Handler from '../utils/Handler';
@@ -15,7 +15,7 @@ export const create = Handler(async (req: Request, res: Response) => {
   }
 });
 
-export const login: RequestHandler = (req, res, next) => {
+export const login: RequestHandler = (req: Request, res: Response, next: NextFunction) => {
   passport.authenticate('local', async (err: any, user: any, info: any) => {
     if (err || !user) {
       return res.status(401).json({ message: 'Authentication failed' });
