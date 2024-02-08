@@ -2,40 +2,14 @@ import { Request, RequestHandler, Response } from 'express';
 import passport from '../config/passport';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import Handler from '../utils/Handler';
-import db from '../models';
 import { ApiError } from '../utils/ErrorHandler';
 import { ApiResponse } from '../utils/ResponseHandler';
 import { createUser, findUser } from '../service/user';
-
-const generateAccessAndRefreshTokens = async (userId: number) => {
-  try {
-    const user = await db.User.findByPk(userId);
-    const { username, email } = user;
-    // const expireTimeInSeconds = 1000 * 3; // 3 seconds
-    const accessToken = jwt.sign({ username, email }, 'eugbf7153%*#^', {
-      expiresIn: '1h',
-    });
-    const refreshToken = jwt.sign({ username, email }, '12345678', {
-      expiresIn: '30d',
-    });
-
-    user.refreshToken = refreshToken;
-    await user.save({ validateBeforeSave: false });
-
-    return { accessToken, refreshToken };
-  } catch (error) {
-    throw new ApiError(
-      500,
-      'Something went wrong while generating referesh and access token'
-    );
-  }
-};
+import { generateAccessAndRefreshTokens } from '../utils/JWTHandler';
 
 export const create = Handler(async (req: Request, res: Response) => {
   try {
-    const createdUser = await createUser(req.body);
-
-    return res.status(200).json({ user: createdUser });
+    return res.status(200).json({ user: await createUser(req.body) });
   } catch (error) {
     return res.status(400).json({ error });
   }
@@ -58,7 +32,7 @@ export const login: RequestHandler = (req, res, next) => {
       const {
         username,
         email,
-        id,
+        id
       }: { username: string; email: string; id: number } = user?.dataValues;
 
       const { refreshToken, accessToken } =
@@ -93,9 +67,7 @@ export const refreshAccessToken = Handler(
     const incomingRefreshToken = req.cookies.refreshToken;
     console.log('incomingRefreshToken:', incomingRefreshToken);
 
-    if (!incomingRefreshToken) {
-      throw new ApiError(401, 'Unauthorized request');
-    }
+    if (!incomingRefreshToken) throw new ApiError(401, 'Unauthorized request');
 
     try {
       const decodedToken = jwt.verify(
@@ -107,9 +79,7 @@ export const refreshAccessToken = Handler(
 
       const user = await findUser({ username, email });
 
-      if (!user) {
-        throw new ApiError(401, 'Invalid refresh token');
-      }
+      if (!user) throw new ApiError(401, 'Invalid refresh token');
 
       const { accessToken, refreshToken } =
         await generateAccessAndRefreshTokens(user.id);

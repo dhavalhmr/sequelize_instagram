@@ -27,7 +27,7 @@ followerRoute.get('/getAllPendingRequest', verifyToken, pendingRequest);
 
 // confirm request, block user, delete request will handled from same api
 // Note: To unblock user change status to "Rejected" //TODO this thing can be done from frontend side
-followerRoute.get('/updateStatus/:senderId/:status', verifyToken, updateStatus);
+followerRoute.put('/updateStatus/:senderId/:status', verifyToken, updateStatus);
 
 // get followers of login user
 followerRoute.get('/getFollowers', verifyToken, getFollowers);
