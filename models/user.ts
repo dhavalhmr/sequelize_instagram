@@ -4,7 +4,7 @@ import bcryptjs from 'bcryptjs';
 
 type UserAttributes = {
   id: number;
-  name:string;
+  name: string;
   username: string;
   email: string;
   password: string;
@@ -51,7 +51,6 @@ export default (sequelize: any, DataTypes: any) => {
       name: {
         type: DataTypes.STRING(50),
         allowNull: false,
-        unique: true,
         set(value: string) {
           this.setDataValue('name', value?.trim());
         },
@@ -84,12 +83,12 @@ export default (sequelize: any, DataTypes: any) => {
       },
       dob: {
         type: DataTypes.DATEONLY,
-        allowNull: false,
         validate: {
           is18(value: number) {
             if (value < 18) throw new Error('Minimum age is required 18');
           },
         },
+        defaultValue: '01-01-2000',
       },
       bio: DataTypes.STRING(500),
     },

@@ -26,10 +26,10 @@ const { name, username, password, host } = config.dbCredential as ConfigType;
 
 const CorsOptions: {
   origin: string;
-  credential: boolean;
+  credentials: boolean;
 } = {
-  origin: '*',
-  credential: true,
+  origin: 'http://localhost:3000',
+  credentials: true,
 };
 
 const pgPool = new pg.Pool({

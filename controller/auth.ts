@@ -9,13 +9,20 @@ import { generateAccessAndRefreshTokens } from '../utils/JWTHandler';
 
 export const create = Handler(async (req: Request, res: Response) => {
   try {
-    return res.status(200).json({ user: await createUser(req.body) });
+    await createUser(req.body);
+
+    // return res.status(200).json({ user: await createUser(req.body) });
+    return res.redirect('http://localhost:3000/');
   } catch (error) {
     return res.status(400).json({ error });
   }
 });
 
-export const login: RequestHandler = (req: Request, res: Response, next: NextFunction) => {
+export const login: RequestHandler = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   passport.authenticate('local', async (err: any, user: any, info: any) => {
     if (err || !user) {
       return res.status(401).json({ message: 'Authentication failed' });
@@ -32,15 +39,15 @@ export const login: RequestHandler = (req: Request, res: Response, next: NextFun
       const {
         username,
         email,
-        id
+        id,
       }: { username: string; email: string; id: number } = user?.dataValues;
 
       const { refreshToken, accessToken } =
         await generateAccessAndRefreshTokens(id);
 
-      res
-        .cookie('access_token', accessToken)
-        .cookie('refreshToken', refreshToken);
+      // res
+      //   .cookie('access_token', accessToken)
+      //   .cookie('refreshToken', refreshToken);
 
       return res
         .status(200)
