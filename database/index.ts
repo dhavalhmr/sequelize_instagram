@@ -1,4 +1,5 @@
 import db from '../models';
+import { constant } from './default';
 
 const sequelize = db.sequelize;
 const initializedDatabase = async () => {
@@ -16,15 +17,25 @@ const initializedDatabase = async () => {
     console.log('Error while initializing Database');
   }
 
+  let force = true;
+
   function sync() {
     sequelize
-      .sync({ alter: true, force: false })
+      .sync({ alter: true, force })
       .then((): void =>
         console.log('Database has been syncronise successfully')
       )
       .catch((err: any): void =>
         console.log('Database has thrown error in syncronise', err)
       );
+  }
+
+  if (force) {
+    console.log(
+      '=>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'
+    );
+
+    constant();
   }
 };
 
