@@ -4,6 +4,7 @@ import bcryptjs from 'bcryptjs';
 
 type UserAttributes = {
   id: number;
+  name:string;
   username: string;
   email: string;
   password: string;
@@ -14,13 +15,13 @@ type UserAttributes = {
 export default (sequelize: any, DataTypes: any) => {
   class User extends Model<UserAttributes> implements UserAttributes {
     id!: number;
+    name!: string;
     username!: string;
     email!: string;
     password!: string;
     dob!: Date;
     bio!: string;
     static associate(models: any) {
-      
       User.hasMany(models.Post, { as: 'posts', foreignKey: 'userId' });
       User.hasMany(models.Follow, {
         as: 'follower',
@@ -45,6 +46,14 @@ export default (sequelize: any, DataTypes: any) => {
         unique: true,
         set(value: string) {
           this.setDataValue('username', value?.trim());
+        },
+      },
+      name: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+        unique: true,
+        set(value: string) {
+          this.setDataValue('name', value?.trim());
         },
       },
       email: {
