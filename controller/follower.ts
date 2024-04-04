@@ -6,7 +6,7 @@ import {
   getFollowing,
   getPendingRequest,
   sendFollowRequest,
-  updateRequestStatus
+  updateRequestStatus,
 } from '../service/follow';
 
 export const follow: RequestHandler = Handler(
@@ -19,7 +19,7 @@ export const follow: RequestHandler = Handler(
 
     await findUserById(receiverId)
       .then(async () => {
-        await sendFollowRequest(senderId, receiverId)
+        await sendFollowRequest(receiverId, senderId)
           .then((follow: object) => res.status(200).json({ follow }))
           .catch((err: any) => res.status(400).json({ message: err.message }));
       })
@@ -33,7 +33,7 @@ export const pendingRequest: RequestHandler = Handler(
 
     await getPendingRequest(receiverId)
       .then((result: Array<object>) => res.status(200).send({ result }))
-      .catch((err: object) => res.status(400).send({ err }));
+      .catch((err: any) => res.status(404).send({ message: err.message }));
   }
 );
 

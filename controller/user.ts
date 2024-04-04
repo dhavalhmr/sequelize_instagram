@@ -5,6 +5,7 @@ import Handler from '../utils/Handler';
 export const get: RequestHandler = Handler(
   async (req: Request, res: Response) => {
     const userId = (req?.user as any)?.dataValues.id;
+    console.log('userId:', userId);
 
     if (userId) {
       const user = await db.User.findByPk(userId, {
@@ -48,6 +49,7 @@ export const get: RequestHandler = Handler(
           {
             model: db?.Follow,
             as: 'follower',
+            required: false,
             attributes: { exclude: ['receiverId', 'createdAt'] },
             where: { status: 'Accepted' },
             include: {
@@ -68,6 +70,7 @@ export const get: RequestHandler = Handler(
           {
             model: db?.Follow,
             as: 'following',
+            required: false,
             attributes: { exclude: ['senderId', 'createdAt'] },
             where: { status: 'Accepted' },
             include: {
@@ -90,6 +93,7 @@ export const get: RequestHandler = Handler(
           exclude: ['password'],
         },
       });
+      console.log('user:', user);
       return res.status(200).json({ User: user });
     } else {
       return res

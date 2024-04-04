@@ -1,14 +1,14 @@
 import db from '../models';
 import { constant } from './default';
-
+const force = false;
 const sequelize = db.sequelize;
 const initializedDatabase = async () => {
   try {
-    sequelize
+    await sequelize
       .authenticate()
-      .then((): void => {
+      .then(async (): Promise<any> => {
         console.log('Connection has been established successfully');
-        sync();
+        await sync();
       })
       .catch((err: any): void => {
         console.log('Database has thrown error', err);
@@ -17,25 +17,16 @@ const initializedDatabase = async () => {
     console.log('Error while initializing Database');
   }
 
-  let force = true;
-
   function sync() {
     sequelize
       .sync({ alter: true, force })
-      .then((): void =>
-        console.log('Database has been syncronise successfully')
-      )
+      .then(async (): Promise<any> => {
+        console.log('Database has been syncronise successfully');
+        if (force) await constant();
+      })
       .catch((err: any): void =>
         console.log('Database has thrown error in syncronise', err)
       );
-  }
-
-  if (force) {
-    console.log(
-      '=>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'
-    );
-
-    constant();
   }
 };
 

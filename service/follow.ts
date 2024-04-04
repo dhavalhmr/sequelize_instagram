@@ -6,7 +6,7 @@ export const sendFollowRequest = async (
   status: string = 'Pending'
 ) => {
   const find = await db.Follow.findAll({
-    where: { receiverId, senderId, status }
+    where: { receiverId, senderId, status },
   });
 
   if (find.length > 0) throw new Error('Already followed');
@@ -19,6 +19,7 @@ export const getPendingRequest = async (
   status: string = 'Pending'
 ) => {
   const requests = await db.Follow.findAll({ where: { receiverId, status } });
+  console.log('requests:', requests);
 
   if (requests.length > 0) return requests;
   else throw new Error('No Pending Request');
@@ -48,15 +49,15 @@ export const getFollower = async (receiverId: string) => {
       model: db.User,
       as: 'sender',
       attributes: {
-        exclude: ['email', 'password', 'dob', 'bio', 'createdAt', 'updatedAt']
-      }
-    }
+        exclude: ['email', 'password', 'dob', 'bio', 'createdAt', 'updatedAt'],
+      },
+    },
   });
 };
 
 export const getFollowing = async (senderId: string) => {
   return db.Follow.findAll({
     attributes: ['receiverId', 'status'],
-    where: { senderId, status: 'Accepted' }
+    where: { senderId, status: 'Accepted' },
   });
 };

@@ -50,6 +50,7 @@ export default (sequelize: any, DataTypes: any) => {
       },
       name: {
         type: DataTypes.STRING(50),
+        unique: false,
         allowNull: false,
         set(value: string) {
           this.setDataValue('name', value?.trim());

@@ -9,10 +9,8 @@ import { generateAccessAndRefreshTokens } from '../utils/JWTHandler';
 
 export const create = Handler(async (req: Request, res: Response) => {
   try {
-    await createUser(req.body);
-
-    // return res.status(200).json({ user: await createUser(req.body) });
-    return res.redirect('http://localhost:3000/');
+    return res.status(200).json({ user: await createUser(req.body) });
+    // return res.redirect('http://localhost:3000/');
   } catch (error) {
     return res.status(400).json({ error });
   }
@@ -51,7 +49,12 @@ export const login: RequestHandler = (
 
       return res
         .status(200)
-        .send({ message: 'Login successful', accessToken, refreshToken });
+        .send({
+          message: 'Login successful',
+          accessToken,
+          refreshToken,
+          user: user.dataValues,
+        });
     });
   })(req, res, next);
 };

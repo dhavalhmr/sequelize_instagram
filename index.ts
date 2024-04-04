@@ -37,7 +37,12 @@ const pgPool = new pg.Pool({
   connectionString: `postgresql://${username}:${password}@${host}:${config.dbCredential.port}/${name}`,
 });
 
-app.use(cors(CorsOptions));
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  })
+);
 app.use(compression());
 app.use(cookieParser());
 app.use(express.json());

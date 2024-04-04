@@ -7,7 +7,6 @@ export const createUser = async (body: JSON): Promise<any> => {
 };
 
 export const findUserById = async (id: number | string): Promise<any> => {
-  console.log('id:', id);
   const user = await db.User.findByPk(id);
   if (!user) {
     throw new Error('User not found');
