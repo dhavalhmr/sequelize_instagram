@@ -7,14 +7,16 @@ import { ApiResponse } from '../utils/ResponseHandler';
 import { createUser, findUser } from '../service/user';
 import { generateAccessAndRefreshTokens } from '../utils/JWTHandler';
 
-export const create = Handler(async (req: Request, res: Response) => {
-  try {
-    return res.status(200).json({ user: await createUser(req.body) });
-    // return res.redirect('http://localhost:3000/');
-  } catch (error) {
-    return res.status(400).json({ error });
+export const create: RequestHandler = Handler(
+  async (req: Request, res: Response) => {
+    try {
+      return res.status(200).json({ user: await createUser(req.body) });
+      // return res.redirect('http://localhost:3000/');
+    } catch (error) {
+      return res.status(400).json({ error });
+    }
   }
-});
+);
 
 export const login: RequestHandler = (
   req: Request,
@@ -37,7 +39,7 @@ export const login: RequestHandler = (
       const {
         username,
         email,
-        id,
+        id
       }: { username: string; email: string; id: number } = user?.dataValues;
 
       const { refreshToken, accessToken } =
@@ -47,14 +49,12 @@ export const login: RequestHandler = (
       //   .cookie('access_token', accessToken)
       //   .cookie('refreshToken', refreshToken);
 
-      return res
-        .status(200)
-        .send({
-          message: 'Login successful',
-          accessToken,
-          refreshToken,
-          user: user.dataValues,
-        });
+      return res.status(200).send({
+        message: 'Login successful',
+        accessToken,
+        refreshToken,
+        user: user.dataValues
+      });
     });
   })(req, res, next);
 };
@@ -72,41 +72,40 @@ export const logout: RequestHandler = Handler((req: Request, res: Response) => {
   });
 });
 
-export const refreshAccessToken = Handler(
-  async (req: Request, res: Response) => {
-    const incomingRefreshToken = req.cookies.refreshToken;
-    console.log('incomingRefreshToken:', incomingRefreshToken);
+export const refreshAccessToken = Handler(async (req: any, res: Response) => {
+  // const incomingRefreshToken = req.cookies.refreshToken;
+  const incomingRefreshToken = req.headers['refresh_token'] as string;
 
-    if (!incomingRefreshToken) throw new ApiError(401, 'Unauthorized request');
+  if (!incomingRefreshToken) throw new ApiError(401, 'Unauthorized request');
 
-    try {
-      const decodedToken = jwt.verify(
-        incomingRefreshToken,
-        '12345678'
-      ) as JwtPayload;
+  try {
+    const decodedToken = jwt.verify(
+      incomingRefreshToken,
+      '12345678'
+    ) as JwtPayload;
 
-      const { username, email } = decodedToken;
+    const { username, email } = decodedToken;
 
-      const user = await findUser({ username, email });
+    const user = await findUser({ username, email });
 
-      if (!user) throw new ApiError(401, 'Invalid refresh token');
+    if (!user) throw new ApiError(401, 'Invalid refresh token');
 
-      const { accessToken, refreshToken } =
-        await generateAccessAndRefreshTokens(user.id);
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+      user.id
+    );
 
-      return res
-        .status(200)
-        .cookie('access_token', accessToken)
-        .cookie('refreshToken', refreshToken)
-        .json(
-          new ApiResponse(
-            200,
-            { accessToken, refreshToken },
-            'Access token refreshed'
-          )
-        );
-    } catch (error: any) {
-      throw new ApiError(401, error?.message || 'Invalid refresh token');
-    }
+    return res
+      .status(200)
+      .cookie('access_token', accessToken)
+      .cookie('refreshToken', refreshToken)
+      .json(
+        new ApiResponse(
+          200,
+          { accessToken, refreshToken },
+          'Access token refreshed'
+        )
+      );
+  } catch (error: any) {
+    throw new ApiError(401, 'Invalid refresh token');
   }
-);
+});
